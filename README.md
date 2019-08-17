@@ -68,10 +68,10 @@ You'll need to adjust the keys `bridge.name`, `bridge.username`, `bridge.pin`, a
 
 Credit goes to
 
-- [wireing pi](http://wiringpi.com/pins/)
-- 433 control codes ported from [433Utils](https://github.com/ninjablocks/433Utils)
+- [wiring pi](http://wiringpi.com/pins/)
+- 433 control code ported from [433Utils](https://github.com/ninjablocks/433Utils)
 - [rfoutlet project](https://github.com/timleland/rfoutlet) and his [blog post](https://timleland.com/wireless-power-outlets/)
-- [http://scottfrees.com/](http://scottfrees.com/) for his great tutorial for asynchronous call.
+- [http://scottfrees.com/](http://scottfrees.com/) for his great tutorial for asynchronous calls
 - inspired by [homebridge-platform-wemo] https://github.com/rudders/homebridge-platform-wemo
 - [rainlake/homebridge-platform-rcswitch](https://github.com/rainlake/homebridge-platform-rcswitch)
 
