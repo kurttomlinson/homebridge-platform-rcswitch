@@ -1,8 +1,13 @@
-# homebridge-platform-rcswitch
+# homebridge-platform-rcswitch-tx-only
 
 <!-- [![NPM Version](https://img.shields.io/npm/v/homebridge-platform-rcswitch.svg)](https://www.npmjs.com/package/homebridge-platform-rcswitch) -->
 
 RCSwitch plugin for the awesome [Homebridge](https://github.com/nfarina/homebridge) project.
+
+# Differences from rainlake/homebridge-platform-rcswitch
+
+1. Sniffing is removed. I found that sniffing often caused my Raspberry Pi's Homebridge process to become unresponsive.
+2. Transmissions are repeated to make them more likely to succeed. Three transmissions are made 500 ms apart for each on/off command.
 
 ## Currently supports
 
