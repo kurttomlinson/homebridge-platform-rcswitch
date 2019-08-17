@@ -29,40 +29,39 @@ Configuration sample:
 
 `switches` is the list of the "buttons" codes on your remote.
 
+You'll need to adjust the keys `bridge.name`, `bridge.username`, `bridge.pin`, and the `on.code` and `off.code` properties for each switch.
+
 ```javascript
 {
-   "bridge": {
-       "name": "#####",
-       "username": "",
-       "port": 51826,
-       "pin": ""
-   },
-
-   "description": "",
-
-   "platforms": [
-       {
-         "platform": "RCSwitch",
-         "name": "RCSwitch Platform",
-         "send_pin": 0,
-         "tolerance": 90,
-         "switches": [
-               {
-                       "name" : "Zap Plug Port 1",
-                       "on": {
-                               "code":xxxxxx,
-                               "pulse":188
-                       },
-                       "off": {
-                               "code":xxxxxx,
-                               "pulse":188
-                       }
-               }
-         ]
-       }
-   ]
+  "bridge": {
+    "name": "Homebridge",
+    "username": "AA:BB:CC:DD:EE:FF",
+    "port": 51826,
+    "pin": "123-45-678"
+  },
+  "description": "",
+  "platforms": [
+    {
+      "platform": "RCSwitch",
+      "name": "RCSwitch Platform",
+      "send_pin": 0,
+      "tolerance": 90,
+      "switches": [
+        {
+          "name": "Zap Plug Port 1",
+          "on": {
+            "code": 123456,
+            "pulse": 188
+          },
+          "off": {
+            "code": 123456,
+            "pulse": 188
+          }
+        }
+      ]
+    }
+  ]
 }
-
 ```
 
 # Credits
