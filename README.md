@@ -29,7 +29,7 @@ Configuration sample:
 
 `switches` is the list of the "buttons" codes on your remote.
 
-You'll need to adjust the keys `bridge.name`, `bridge.username`, `bridge.pin`, and the `on.code` and `off.code` properties for each switch.
+You'll need to adjust the keys `platforms[0].send_pin`, `bridge.name`, `bridge.username`, `bridge.pin`, and the `on.code` and `off.code` properties for each of the `switches`.
 
 ```javascript
 {
