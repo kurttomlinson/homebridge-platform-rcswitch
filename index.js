@@ -11,19 +11,6 @@ function RCSwitchPlatform(log, config) {
     var self = this;
     self.config = config;
     self.log = log;
-    rsswitch.setupSniffer(self.config.sniffer_pin, self.config.tolerance);
-}
-RCSwitchPlatform.prototype.listen = function() {
-    var self = this;
-    rsswitch.sniffer(function(value, delay) {
-        self.log('got a message, value=[%d], delay=[%d]', value, delay);
-        if(self.accessories) {
-            self.accessories.forEach(function(accessory) {
-                accessory.notify.call(accessory, value);
-            });
-        }
-        setTimeout(self.listen.bind(self), 0);
-    });
 }
 RCSwitchPlatform.prototype.accessories = function(callback) {
     var self = this;
@@ -31,7 +18,6 @@ RCSwitchPlatform.prototype.accessories = function(callback) {
     self.config.switches.forEach(function(sw) {
         self.accessories.push(new RCSwitchAccessory(sw, self.log, self.config));
     });
-    setTimeout(self.listen.bind(self),10);
     callback(self.accessories);
 }
 
