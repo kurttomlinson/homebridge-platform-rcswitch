@@ -11,8 +11,30 @@ module.exports = function(homebridge) {
   );
 };
 
-const RETRY_DELAY_MS = 500;
-const RETRY_DURATION = 1100;
+const sendQueue = [];
+const TRANSMISSION_DELAY_MS = 300;
+const TRANSMISSION_ATTEMPTS = 3;
+let queueProcessingIsScehduled = false;
+
+const processQueue = () => {
+  queueProcessingIsScehduled = false;
+
+  const message = sendQueue.shift();
+  rsswitch.send(message.sendPin, message.code, message.pulse);
+
+  scheduleQueueProcessing();
+};
+
+const scheduleQueueProcessing = ({ runNow = false } = { runNow: false }) => {
+  if (queueProcessingIsScehduled) {
+    return;
+  }
+  if (sendQueue.length > 0) {
+    const delay = runNow ? 0 : TRANSMISSION_DELAY_MS;
+    setTimeout(processQueue, delay);
+    queueProcessingIsScehduled = true;
+  }
+};
 
 function RCSwitchPlatform(log, config) {
   var self = this;
@@ -52,28 +74,22 @@ function RCSwitchAccessory(sw, log, config) {
     function(state, cb) {
       self.currentState = state;
       if (self.currentState) {
-        for (let delay = 0; delay <= RETRY_DURATION; delay += RETRY_DELAY_MS) {
-          setTimeout(
-            () =>
-              rsswitch.send(
-                self.config.send_pin,
-                self.sw.on.code,
-                self.sw.on.pulse
-              ),
-            delay
-          );
+        for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
+          sendQueue.push({
+            sendPin: self.config.send_pin,
+            code: self.sw.on.code,
+            pulse: self.sw.on.pulse
+          });
+          scheduleQueueProcessing({ runNow: true });
         }
       } else {
-        for (let delay = 0; delay <= RETRY_DURATION; delay += RETRY_DELAY_MS) {
-          setTimeout(
-            () =>
-              rsswitch.send(
-                self.config.send_pin,
-                self.sw.off.code,
-                self.sw.off.pulse
-              ),
-            delay
-          );
+        for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
+          sendQueue.push({
+            sendPin: self.config.send_pin,
+            code: self.sw.off.code,
+            pulse: self.sw.off.pulse
+          });
+          scheduleQueueProcessing({ runNow: true });
         }
       }
       cb(null);
