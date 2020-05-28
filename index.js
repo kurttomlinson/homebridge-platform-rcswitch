@@ -14,10 +14,10 @@ module.exports = function(homebridge) {
 const sendQueue = [];
 const TRANSMISSION_DELAY_MS = 300;
 const TRANSMISSION_ATTEMPTS = 3;
-let queueProcessingIsScehduled = false;
+let queueProcessingIsScheduled = false;
 
 const processQueue = () => {
-  queueProcessingIsScehduled = false;
+  queueProcessingIsScheduled = false;
 
   const message = sendQueue.shift();
   rsswitch.send(message.sendPin, message.code, message.pulse);
@@ -26,13 +26,13 @@ const processQueue = () => {
 };
 
 const scheduleQueueProcessing = ({ runNow = false } = { runNow: false }) => {
-  if (queueProcessingIsScehduled) {
+  if (queueProcessingIsScheduled) {
     return;
   }
   if (sendQueue.length > 0) {
     const delay = runNow ? 0 : TRANSMISSION_DELAY_MS;
     setTimeout(processQueue, delay);
-    queueProcessingIsScehduled = true;
+    queueProcessingIsScheduled = true;
   }
 };
 
