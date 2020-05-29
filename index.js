@@ -69,6 +69,7 @@ class RCSwitchAccessory {
       .getCharacteristic(Characteristic.On)
       .on("set", (state, callback) => {
         this.currentState = state;
+        this.log(`Setting ${this.name} to ${this.currentState}`);
         for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
           sendQueue.push({
             sendPin: this.config.send_pin,
