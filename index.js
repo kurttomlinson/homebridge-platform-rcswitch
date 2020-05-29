@@ -25,7 +25,7 @@ const processQueue = () => {
   scheduleQueueProcessing();
 };
 
-const scheduleQueueProcessing = ({ runNow = false } = { runNow: false }) => {
+const scheduleQueueProcessing = ({ runNow = false } = {}) => {
   if (queueProcessingIsScheduled) {
     return;
   }
