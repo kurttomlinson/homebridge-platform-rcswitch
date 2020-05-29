@@ -43,7 +43,7 @@ class RCSwitchPlatform {
   }
   accessories(callback) {
     this.accessories = [];
-    this.config.switches.forEach(function (sw) {
+    this.config.switches.forEach((sw) => {
       this.accessories.push(new RCSwitchAccessory(sw, this.log, this.config));
     });
     callback(this.accessories);
