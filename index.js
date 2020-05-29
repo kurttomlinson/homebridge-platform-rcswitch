@@ -38,70 +38,65 @@ const scheduleQueueProcessing = ({ runNow = false } = {}) => {
 
 class RCSwitchPlatform {
   constructor(log, config) {
-    var self = this;
-    self.config = config;
-    self.log = log;
+    this.config = config;
+    this.log = log;
   }
   accessories(callback) {
-    var self = this;
-    self.accessories = [];
-    self.config.switches.forEach(function (sw) {
-      self.accessories.push(new RCSwitchAccessory(sw, self.log, self.config));
+    this.accessories = [];
+    this.config.switches.forEach(function (sw) {
+      this.accessories.push(new RCSwitchAccessory(sw, this.log, this.config));
     });
-    callback(self.accessories);
+    callback(this.accessories);
   }
 }
 
 class RCSwitchAccessory {
   constructor(sw, log, config) {
-    var self = this;
-    self.name = sw.name;
-    self.sw = sw;
-    self.log = log;
-    self.config = config;
-    self.currentState = false;
-    self.service = new Service.Switch(self.name);
-    self.service.getCharacteristic(Characteristic.On).value = self.currentState;
-    self.service.getCharacteristic(Characteristic.On).on("get", function (cb) {
-      cb(null, self.currentState);
-    }.bind(self));
-    self.service.getCharacteristic(Characteristic.On).on("set", function (state, cb) {
-      self.currentState = state;
+    this.name = sw.name;
+    this.sw = sw;
+    this.log = log;
+    this.config = config;
+    this.currentState = false;
+    this.service = new Service.Switch(this.name);
+    this.service.getCharacteristic(Characteristic.On).value = this.currentState;
+    this.service.getCharacteristic(Characteristic.On).on("get", function (cb) {
+      cb(null, this.currentState);
+    }.bind(this));
+    this.service.getCharacteristic(Characteristic.On).on("set", function (state, cb) {
+      this.currentState = state;
         for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
           sendQueue.push({
-            sendPin: self.config.send_pin,
-            code: self.sw.on.code,
-            pulse: self.currentState ? self.sw.on.pulse : self.sw.off.pulse,
+            sendPin: this.config.send_pin,
+            code: this.sw.on.code,
+            pulse: this.currentState ? this.sw.on.pulse : this.sw.off.pulse,
           });
           scheduleQueueProcessing({ runNow: true });
         }
       cb(null);
-    }.bind(self));
+    }.bind(this));
   }
   notify(code) {
-    var self = this;
     if (this.sw.on.code === code) {
-      self.log("%s is turned on", self.sw.name);
-      self.service.getCharacteristic(Characteristic.On).setValue(true);
+      this.log("%s is turned on", this.sw.name);
+      this.service.getCharacteristic(Characteristic.On).setValue(true);
     }
     else if (this.sw.off.code === code) {
-      self.log("%s is turned off", self.sw.name);
-      self.service.getCharacteristic(Characteristic.On).setValue(false);
+      this.log("%s is turned off", this.sw.name);
+      this.service.getCharacteristic(Characteristic.On).setValue(false);
     }
   }
   getServices() {
-    var self = this;
     var services = [];
     var service = new Service.AccessoryInformation();
     service
-      .setCharacteristic(Characteristic.Name, self.name)
+      .setCharacteristic(Characteristic.Name, this.name)
       .setCharacteristic(Characteristic.Manufacturer, "Raspberry Pi")
       .setCharacteristic(Characteristic.Model, "Raspberry Pi")
       .setCharacteristic(Characteristic.SerialNumber, "Raspberry Pi")
       .setCharacteristic(Characteristic.FirmwareRevision, "1.0.0")
       .setCharacteristic(Characteristic.HardwareRevision, "1.0.0");
     services.push(service);
-    services.push(self.service);
+    services.push(this.service);
     return services;
   }
 }
