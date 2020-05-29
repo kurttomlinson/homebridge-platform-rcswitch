@@ -1,7 +1,7 @@
 var Service, Characteristic, LastUpdate;
 var rsswitch = require("./build/Release/rsswitch");
 
-module.exports = function(homebridge) {
+module.exports = function (homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   homebridge.registerPlatform(
@@ -59,28 +59,27 @@ class RCSwitchAccessory {
     this.currentState = false;
     this.service = new Service.Switch(this.name);
     this.service.getCharacteristic(Characteristic.On).value = this.currentState;
-    this.service.getCharacteristic(Characteristic.On).on("get", function (cb) {
+    this.service.getCharacteristic(Characteristic.On).on("get", (cb) => {
       cb(null, this.currentState);
-    }.bind(this));
-    this.service.getCharacteristic(Characteristic.On).on("set", function (state, cb) {
+    });
+    this.service.getCharacteristic(Characteristic.On).on("set", (state, cb) => {
       this.currentState = state;
-        for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
-          sendQueue.push({
-            sendPin: this.config.send_pin,
-            code: this.sw.on.code,
-            pulse: this.currentState ? this.sw.on.pulse : this.sw.off.pulse,
-          });
-          scheduleQueueProcessing({ runNow: true });
-        }
+      for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
+        sendQueue.push({
+          sendPin: this.config.send_pin,
+          code: this.sw.on.code,
+          pulse: this.currentState ? this.sw.on.pulse : this.sw.off.pulse,
+        });
+        scheduleQueueProcessing({ runNow: true });
+      }
       cb(null);
-    }.bind(this));
+    });
   }
   notify(code) {
     if (this.sw.on.code === code) {
       this.log("%s is turned on", this.sw.name);
       this.service.getCharacteristic(Characteristic.On).setValue(true);
-    }
-    else if (this.sw.off.code === code) {
+    } else if (this.sw.off.code === code) {
       this.log("%s is turned off", this.sw.name);
       this.service.getCharacteristic(Characteristic.On).setValue(false);
     }
@@ -100,4 +99,3 @@ class RCSwitchAccessory {
     return services;
   }
 }
-
