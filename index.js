@@ -67,26 +67,14 @@ class RCSwitchAccessory {
     }.bind(self));
     self.service.getCharacteristic(Characteristic.On).on("set", function (state, cb) {
       self.currentState = state;
-      if (self.currentState) {
         for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
           sendQueue.push({
             sendPin: self.config.send_pin,
             code: self.sw.on.code,
-            pulse: self.sw.on.pulse
+            pulse: self.currentState ? self.sw.on.pulse : self.sw.off.pulse,
           });
           scheduleQueueProcessing({ runNow: true });
         }
-      }
-      else {
-        for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
-          sendQueue.push({
-            sendPin: self.config.send_pin,
-            code: self.sw.off.code,
-            pulse: self.sw.off.pulse
-          });
-          scheduleQueueProcessing({ runNow: true });
-        }
-      }
       cb(null);
     }.bind(self));
   }
