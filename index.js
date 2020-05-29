@@ -1,5 +1,6 @@
 let Service, Characteristic;
 const rsswitch = require("./build/Release/rsswitch");
+const switches = [];
 
 module.exports = function (homebridge) {
   Service = homebridge.hap.Service;
@@ -15,16 +16,16 @@ const sendQueue = [];
 const TRANSMISSION_DELAY_MS = 300;
 const TRANSMISSION_ATTEMPTS = 3;
 let queueProcessingIsScheduled = false;
-
 const processQueue = () => {
   queueProcessingIsScheduled = false;
 
   const message = sendQueue.shift();
   rsswitch.send(message.sendPin, message.code, message.pulse);
+  switches.forEach((sw) => console.log(`${sw.name} is ${sw.currentState}`));
+  console.log("-=-=-=-");
 
   scheduleQueueProcessing();
 };
-
 const scheduleQueueProcessing = ({ runNow = false } = {}) => {
   if (queueProcessingIsScheduled) {
     return;
@@ -44,7 +45,9 @@ class RCSwitchPlatform {
   accessories(callback) {
     this.accessories = [];
     this.config.switches.forEach((sw) => {
-      this.accessories.push(new RCSwitchAccessory(sw, this.log, this.config));
+      const rcSwitch = new RCSwitchAccessory(sw, this.log, this.config);
+      switches.push(rcSwitch);
+      this.accessories.push(rcSwitch);
     });
     callback(this.accessories);
   }
@@ -62,18 +65,20 @@ class RCSwitchAccessory {
     this.service.getCharacteristic(Characteristic.On).on("get", (callback) => {
       callback(null, this.currentState);
     });
-    this.service.getCharacteristic(Characteristic.On).on("set", (state, callback) => {
-      this.currentState = state;
-      for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
-        sendQueue.push({
-          sendPin: this.config.send_pin,
-          code: this.sw.on.code,
-          pulse: this.currentState ? this.sw.on.pulse : this.sw.off.pulse,
-        });
-        scheduleQueueProcessing({ runNow: true });
-      }
-      callback(null);
-    });
+    this.service
+      .getCharacteristic(Characteristic.On)
+      .on("set", (state, callback) => {
+        this.currentState = state;
+        for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
+          sendQueue.push({
+            sendPin: this.config.send_pin,
+            code: this.sw.on.code,
+            pulse: this.currentState ? this.sw.on.pulse : this.sw.off.pulse,
+          });
+          scheduleQueueProcessing({ runNow: true });
+        }
+        callback(null);
+      });
   }
   notify(code) {
     if (this.sw.on.code === code) {
