@@ -1,5 +1,5 @@
-var Service, Characteristic, LastUpdate;
-var rsswitch = require("./build/Release/rsswitch");
+let Service, Characteristic;
+const rsswitch = require("./build/Release/rsswitch");
 
 module.exports = function (homebridge) {
   Service = homebridge.hap.Service;
@@ -85,16 +85,16 @@ class RCSwitchAccessory {
     }
   }
   getServices() {
-    var services = [];
-    var service = new Service.AccessoryInformation();
-    service
+    const services = [];
+    const serviceAccessoryInformation = new Service.AccessoryInformation();
+    serviceAccessoryInformation
       .setCharacteristic(Characteristic.Name, this.name)
       .setCharacteristic(Characteristic.Manufacturer, "Raspberry Pi")
       .setCharacteristic(Characteristic.Model, "Raspberry Pi")
       .setCharacteristic(Characteristic.SerialNumber, "Raspberry Pi")
       .setCharacteristic(Characteristic.FirmwareRevision, "1.0.0")
       .setCharacteristic(Characteristic.HardwareRevision, "1.0.0");
-    services.push(service);
+    services.push(serviceAccessoryInformation);
     services.push(this.service);
     return services;
   }
