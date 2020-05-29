@@ -7,7 +7,7 @@ RCSwitch plugin for the awesome [Homebridge](https://github.com/nfarina/homebrid
 ## Differences from [rainlake/homebridge-platform-rcswitch](https://github.com/rainlake/homebridge-platform-rcswitch)
 
 1. Sniffing is removed. I found that sniffing often caused my Raspberry Pi's Homebridge process to become unresponsive.
-2. Transmissions are repeated to make them more likely to succeed. Three transmissions are made 500 ms apart for each on/off command.
+2. Transmissions are repeated to make them more likely to succeed. Every 300 ms, the current state for a switch is broadcast over the RF radio. This plugin cycles through all of the switches and broadcasts their current state one at a time. Switches with new states are prioritized to be broadcast first.
 
 ## Currently supports
 
