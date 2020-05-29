@@ -1,39 +1,35 @@
 let Service, Characteristic;
 const rsswitch = require("./build/Release/rsswitch");
-const switches = [];
 
 module.exports = function (homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   homebridge.registerPlatform(
-    "homebridge-platform-rcswitch",
+    "homebridge-platform-rcswitch-tx-only",
     "RCSwitch",
     RCSwitchPlatform
   );
 };
 
+let intervalHandle = null;
+const switches = [];
 const sendQueue = [];
+let switchIndex = 0;
 const TRANSMISSION_DELAY_MS = 300;
-const TRANSMISSION_ATTEMPTS = 3;
-let queueProcessingIsScheduled = false;
 const processQueue = () => {
-  queueProcessingIsScheduled = false;
-
-  const message = sendQueue.shift();
-  rsswitch.send(message.sendPin, message.code, message.pulse);
-  switches.forEach((sw) => console.log(`${sw.name} is ${sw.currentState}`));
-  console.log("-=-=-=-");
-
-  scheduleQueueProcessing();
-};
-const scheduleQueueProcessing = ({ runNow = false } = {}) => {
-  if (queueProcessingIsScheduled) {
-    return;
-  }
+  let switchToBroadcast;
   if (sendQueue.length > 0) {
-    const delay = runNow ? 0 : TRANSMISSION_DELAY_MS;
-    setTimeout(processQueue, delay);
-    queueProcessingIsScheduled = true;
+    const switchName = sendQueue.shift();
+    switchToBroadcast = switches.find((sw) => sw.name == switchName);
+  } else {
+    switchToBroadcast = switches[switchIndex];
+    switchIndex = (switchIndex + 1) % switches.length;
+  }
+  switchToBroadcast.broadcast();
+};
+const scheduleQueueProcessing = () => {
+  if (intervalHandle == null) {
+    intervalHandle = setInterval(processQueue, TRANSMISSION_DELAY_MS);
   }
 };
 
@@ -70,16 +66,16 @@ class RCSwitchAccessory {
       .on("set", (state, callback) => {
         this.currentState = state;
         this.log(`Setting ${this.name} to ${this.currentState}`);
-        for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
-          sendQueue.push({
-            sendPin: this.config.send_pin,
-            code: this.sw.on.code,
-            pulse: this.currentState ? this.sw.on.pulse : this.sw.off.pulse,
-          });
-          scheduleQueueProcessing({ runNow: true });
-        }
+        sendQueue.push(this.name);
+        scheduleQueueProcessing();
         callback(null);
       });
+  }
+  broadcast() {
+    const sendPin = this.config.send_pin;
+    const code = this.currentState ? this.sw.on.code : this.sw.off.code;
+    const pulse = this.currentState ? this.sw.on.pulse : this.sw.off.pulse;
+    rsswitch.send(sendPin, code, pulse);
   }
   notify(code) {
     if (this.sw.on.code === code) {
