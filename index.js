@@ -59,10 +59,10 @@ class RCSwitchAccessory {
     this.currentState = false;
     this.service = new Service.Switch(this.name);
     this.service.getCharacteristic(Characteristic.On).value = this.currentState;
-    this.service.getCharacteristic(Characteristic.On).on("get", (cb) => {
-      cb(null, this.currentState);
+    this.service.getCharacteristic(Characteristic.On).on("get", (callback) => {
+      callback(null, this.currentState);
     });
-    this.service.getCharacteristic(Characteristic.On).on("set", (state, cb) => {
+    this.service.getCharacteristic(Characteristic.On).on("set", (state, callback) => {
       this.currentState = state;
       for (let count = 1; count <= TRANSMISSION_ATTEMPTS; count += 1) {
         sendQueue.push({
@@ -72,7 +72,7 @@ class RCSwitchAccessory {
         });
         scheduleQueueProcessing({ runNow: true });
       }
-      cb(null);
+      callback(null);
     });
   }
   notify(code) {
