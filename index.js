@@ -15,7 +15,7 @@ let intervalHandle = null;
 const switches = [];
 const sendQueue = [];
 let switchIndex = 0;
-const TRANSMISSION_DELAY_MS = 300;
+let transmissionDelayMs = 300;
 const processQueue = () => {
   let switchToBroadcast;
   if (sendQueue.length > 0) {
@@ -29,13 +29,15 @@ const processQueue = () => {
 };
 const scheduleQueueProcessing = () => {
   if (intervalHandle == null) {
-    intervalHandle = setInterval(processQueue, TRANSMISSION_DELAY_MS);
+    intervalHandle = setInterval(processQueue, transmissionDelayMs);
   }
 };
 
 class RCSwitchPlatform {
   constructor(log, config) {
     this.config = config;
+    transmissionDelayMs = config.transmission_delay_ms || transmissionDelayMs;
+    log(`Set transmissionDelayMs to ${transmissionDelayMs} ms.`);
     this.log = log;
   }
   accessories(callback) {
