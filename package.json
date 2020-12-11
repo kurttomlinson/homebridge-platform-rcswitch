@@ -1,6 +1,6 @@
 {
   "name": "homebridge-platform-rcswitch-tx-only",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "rcswitch plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "MIT",
   "keywords": [
