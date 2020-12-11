@@ -28,7 +28,6 @@ static void data_is_ready(unsigned long received_value, unsigned int received_de
 
 static void SnifferAsync(uv_work_t *req) {
 	Work *work = static_cast<Work *>(req->data);
-	Isolate * isolate = Isolate::GetCurrent();
 	uv_mutex_lock(&work->mutex);
 	uv_cond_wait(&work->cond, &work->mutex);
 	uv_mutex_unlock(&work->mutex);
