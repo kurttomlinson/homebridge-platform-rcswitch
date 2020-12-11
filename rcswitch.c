@@ -132,7 +132,7 @@ void rcswitch_send(int protocol, int pin, int repeat, int pulse, unsigned long c
 void rcswitch_send_scode_word(int protocol, int pin, int repeat, int pulse, char* sCodeWord) {
     if(!isWiringSetup) {
         if (wiringPiSetup () == -1) {
-            fprintf(stderr,"wiringPiSetup failed %d\n");
+            fprintf(stderr,"wiringPiSetup failed\n");
         }
         isWiringSetup = 1;
     }
