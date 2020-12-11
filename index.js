@@ -15,7 +15,7 @@ let intervalHandle = null;
 const switches = [];
 const sendQueue = [];
 let switchIndex = 0;
-let transmissionDelayMs = 300;
+let transmissionDelayMs = 500;
 const processQueue = () => {
   let switchToBroadcast;
   if (sendQueue.length > 0) {
