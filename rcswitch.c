@@ -76,7 +76,7 @@ static int rcswitch_receive_protocol1(unsigned int changeCount) {
   unsigned long code = 0;
   unsigned long delay = timings[0] / 31;
   unsigned long delayTolerance = delay * nReceiveTolerance * 0.01;
-  int i = 0;
+  unsigned int i = 0;
   for (i = 1; i < changeCount; i += 2) {
     if (timings[i] > delay - delayTolerance &&
         timings[i] < delay + delayTolerance &&
@@ -109,7 +109,7 @@ static int rcswitch_receive_protocol2(unsigned int changeCount) {
   unsigned long code = 0;
   unsigned long delay = timings[0] / 10;
   unsigned long delayTolerance = delay * nReceiveTolerance * 0.01;
-  int i = 0;
+  unsigned int i = 0;
 
   for (i = 1; i < changeCount; i += 2) {
     if (timings[i] > delay - delayTolerance &&

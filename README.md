@@ -78,3 +78,10 @@ Credit goes to
 # License
 
 Published under the MIT License.
+
+# Development
+
+```
+node-gyp configure
+node-gyp build
+```
